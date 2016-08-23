@@ -20,7 +20,7 @@ library(ggplot2)
 The monitoring data is first uploaded to R for preprocessing and is stored in a data frame `activity`. The date column is formatted into POSIXct format. The interval column is converted into factors. We also note that the file has a number of NAs which we'll address later on during processing.
 
 ```r
-activity <- read.csv("./RepData_PeerAssessment1/activity.csv", header = TRUE, stringsAsFactors = FALSE )
+activity <- read.csv("./activity.csv", header = TRUE, stringsAsFactors = FALSE )
 activity$date <- as.POSIXct(activity$date)
 activity$interval <- as.factor(activity$interval)
 ```
@@ -139,7 +139,7 @@ It turns out that the median number of daily steps is 10766 and the mean number 
 ## 1            mean    9354      10766
 ## 2          median   10395      10766
 ```
-The histogram shows a marked reduction in the left-most bin centered around zero steps, since the missing values were imputed. This time also the vertical lines showing mean and median overlap. Thus, the distribution is no longer skewed.
+The histogram shows a marked reduction in the left-most bin centered around zero steps, since the missing values were imputed. This time also the vertical lines showing mean and median overlap, which shows that the distribution is no longer skewed. More values are centered around the bar with highest frequency as the missing value days were converted to average across all the days.
 
 
 ```r
