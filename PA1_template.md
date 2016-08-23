@@ -56,7 +56,6 @@ meanSteps <- round(mean(dailyActivity$dailysteps, na.rm = TRUE), digits = 0)
 medianSteps <- median(dailyActivity$dailysteps, na.rm = TRUE)
 bins = range(dailyActivity$dailysteps)[2]
 ```
-
 It turns out that the *median* number of daily steps is 10395 and the *mean* number of daily steps is 9354. The binwidth used in the histogram is 1060 which appears a reasonable size for the distribution in question. Using smaller bidwidths tends to brek the histogram into separate bars with white space between them. The fact that the distribution's mean is smaller than its median shows that the distribution is skewed left. This is due to the days with missing data being converted to zero steps.
 
 
@@ -64,7 +63,7 @@ It turns out that the *median* number of daily steps is 10395 and the *mean* num
 ggplot(dailyActivity, aes(x=dailysteps)) + geom_histogram(binwidth = bins/20, fill = "orangered") + geom_vline(size=1, aes(xintercept = medianSteps)) + geom_vline(size=1, color = "darkgreen", aes( xintercept = meanSteps)) + labs(x="number of steps taken per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+![Histogram with missing data](PA1_template_files/figure-html/unnamed-chunk-5-1.png)
 
 The median of daily steps is shown as a black vertical line on the histogram whereas the mean is a green vertical line to the left of the median.
 
@@ -78,12 +77,15 @@ fiveminActivity <- activity%>%group_by(interval)%>%summarise(mean(steps, na.rm =
 names(fiveminActivity) <- c("interval","meansteps")
 # generate tick spacing and marks for the x axis of the plot
 hops <- seq(from = 1, to = length(intervalLevels), by = 12)
+```
 
+```r
 p <- ggplot(fiveminActivity, aes(x=as.numeric(interval), y = meansteps)) + geom_line() + labs(x="interval", y = "number of steps")
 p + scale_x_continuous(breaks = seq(1,288, 12), labels = intervalLevels[hops]) + theme(axis.text.x=element_text(angle=90,hjust=1))
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![Daily averages with missing data](PA1_template_files/figure-html/unnamed-chunk-7-1.png)
+
 Below we calculate at which time interval the maximum number of steps was taken.
 
 ```r
@@ -146,7 +148,7 @@ The histogram shows a marked reduction in the left-most bin centered around zero
 ggplot(dailyActivity2, aes(x=dailysteps)) + geom_histogram(binwidth = bins/20, fill = "orangered") + geom_vline(size=1, aes(xintercept = medianSteps2)) + geom_vline(size=1, color = "darkgreen", aes( xintercept = meanSteps2)) + labs(x="number of steps taken per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![Histogram with missing data imputed](PA1_template_files/figure-html/unnamed-chunk-13-1.png)
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -166,11 +168,14 @@ activity$dayofweek <- as.factor(activity$dayofweek)
 fiveminActivity2 <- activity%>%group_by(interval, dayofweek)%>%summarise(mean(steps, na.rm = TRUE))
 names(fiveminActivity2) <- c("interval","dayofweek","meansteps")
 hops <- seq(from = 1, to = length(intervalLevels), by = 12)
+```
+
+```r
 p <- ggplot(fiveminActivity2, aes(x=as.numeric(interval), y = meansteps)) + geom_line() + labs(x="interval", y = "number of steps") + facet_grid(dayofweek~.)
 p + scale_x_continuous(breaks = seq(1,288, 12), labels = intervalLevels[hops]) + theme(axis.text.x=element_text(angle=90,hjust=1))
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![Daily averages with missing data imputed](PA1_template_files/figure-html/unnamed-chunk-16-1.png)
 
 We can see a pattern which is likely expected, i.e. the subject gets up and starts moving quite a bit earlier on weekdays than during weekend. The subject also settles down and moves less earlier during weekday evenings. 
 
