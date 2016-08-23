@@ -58,7 +58,7 @@ meanSteps <- round(mean(dailyActivity$dailysteps, na.rm = TRUE), digits = 0)
 medianSteps <- median(dailyActivity$dailysteps, na.rm = TRUE)
 bins = range(dailyActivity$dailysteps)[2]
 ```
-
+![Histogram](figure/unnamed-chunk-5-1.png)
 It turns out that the *median* number of daily steps is `r medianSteps` and the *mean* number of daily steps is `r meanSteps`. The binwidth used in the histogram is `r round(bins/20, digits = 0)` which appears a reasonable size for the distribution in question. Using smaller bidwidths tends to brek the histogram into separate bars with white space between them. The fact that the distribution's mean is smaller than its median shows that the distribution is skewed left. This is due to the days with missing data being converted to zero steps.
 
 ```{r echo=TRUE, fig.height = 4}
