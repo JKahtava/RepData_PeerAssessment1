@@ -56,11 +56,13 @@ meanSteps <- round(mean(dailyActivity$dailysteps, na.rm = TRUE), digits = 0)
 medianSteps <- median(dailyActivity$dailysteps, na.rm = TRUE)
 bins = range(dailyActivity$dailysteps)[2]
 ```
-It turns out that the *median* number of daily steps is 10395 and the *mean* number of daily steps is 9354. The binwidth used in the histogram is 1060 which appears a reasonable size for the distribution in question. Using smaller bidwidths tends to brek the histogram into separate bars with white space between them. The fact that the distribution's mean is smaller than its median shows that the distribution is skewed left. This is due to the days with missing data being converted to zero steps.
+It turns out that the *median* number of daily steps is 10395 and the *mean* number of daily steps is 9354. The binwidth used in the histogram is 1060 which appears a reasonable size for the distribution in question. Using smaller bidwidths tends to break the histogram into separate bars with white space between them. The fact that the distribution's mean is smaller than its median shows that the distribution is skewed left. This is due to the days with missing data being converted to zero steps.
 
 
 ```r
-ggplot(dailyActivity, aes(x=dailysteps)) + geom_histogram(binwidth = bins/20, fill = "orangered") + geom_vline(size=1, aes(xintercept = medianSteps)) + geom_vline(size=1, color = "darkgreen", aes( xintercept = meanSteps)) + labs(x="number of steps taken per day")
+ggplot(dailyActivity, aes(x=dailysteps)) + geom_histogram(binwidth = bins/20, fill = "orangered") + geom_vline(size=1, aes(xintercept = medianSteps)) + 
+        geom_vline(size=1, color = "darkgreen", aes( xintercept = meanSteps)) + 
+        labs(x="number of steps taken per day")
 ```
 
 ![Histogram with missing data](PA1_template_files/figure-html/unnamed-chunk-5-1.png)
@@ -89,7 +91,6 @@ p + scale_x_continuous(breaks = seq(1,288, 12), labels = intervalLevels[hops]) +
 Below we calculate at which time interval the maximum number of steps was taken.
 
 ```r
-maxSteps <- fiveminActivity$meansteps[which.max(fiveminActivity$meansteps)]
 maxStepsTime <- fiveminActivity$interval[which.max(fiveminActivity$meansteps)]
 nextInterval <- fiveminActivity$interval[which.max(fiveminActivity$meansteps)+1]
 ```
@@ -97,7 +98,7 @@ The maximum number of steps taken on an average day took place during the interv
 
 ## Imputing missing values
 
-At this step we analyse the data more closely and identify how many missing values it has in total. 
+At this step we analyse the data more closely and identify how many missing values it has in total and how those values are distributed. 
 
 ```r
 missingIntervals <- is.na(activity$steps)
@@ -151,7 +152,7 @@ activityImputed2[missingIntervals, ] <- missingData[, ]
 
 Now we have a new dataset where the missing values are imputed with the average value for each interval across the number of days. Let's recalculate the mean total number of steps taken each day. 
 
-### Removing dates with missing values from the original data
+#### Case1: rows with missing values removed
 
 ```r
 dailyActivity <- activityImputed%>%group_by(date)%>%summarise(sum(steps, na.rm = TRUE))
@@ -161,7 +162,7 @@ medianStepsImputed <- median(dailyActivity$dailysteps, na.rm = TRUE)
 bins = range(dailyActivity$dailysteps)[2]
 ```
 
-### Replacing missing values with five-minute interval means
+#### Case2: missing values inputed with five-minute interval averages
 
 ```r
 dailyActivity2 <- activityImputed2%>%group_by(date)%>%summarise(sum(steps, na.rm = TRUE))
@@ -175,7 +176,7 @@ names(statistics) <- c("centraltendency","withNAs","imputedNAsRemoved","imputedN
 
 ### Comparison of central tendencies
 
-It turns out that the mean number of daily steps is the same for both approaches at 10766. On the other hand, there is a very small difference in the median number of daily steps is at 10765 and 10766. This is understandable because in the second approach we hav added new values to the dataset even though they concentrate around the mean. When the median and mean values for the original dataset with missing values are compared to these, we can see that the left-skewed characteristics of the distribution disappears (due to imputing NAs with average values).
+It turns out that the mean number of daily steps is the same for both approaches at 10766. On the other hand, there is a very small difference in the median number of daily steps is at 10765 and 10766. This is understandable because in the second approach we have added new values to the dataset even though they concentrate around the mean. When the median and mean values for the original dataset with missing values are compared to these, we can see that the left-skewed characteristics of the distribution disappears (due to imputing NAs with average values).
 
 ```
 ##   centraltendency withNAs imputedNAsRemoved imputedNAsAveraged
@@ -184,22 +185,22 @@ It turns out that the mean number of daily steps is the same for both approaches
 ```
 The histogram shows a marked reduction in the left-most bin centered around zero steps, since the missing values were imputed. This time also the vertical lines showing mean and median overlap, which shows that the distribution is no longer skewed. 
 
-### Histogram removing rows with missing values
+#### Case1: rows with missing values removed
 
 
 ```r
 ggplot(dailyActivity, aes(x=dailysteps)) + geom_histogram(binwidth = bins/20, fill = "orangered") + geom_vline(size=1, aes(xintercept = medianStepsImputed)) + geom_vline(size=1, color = "darkgreen", aes( xintercept = meanStepsImputed)) + labs(x="number of steps taken per day")
 ```
 
-![Histogram with missing data imputed through removing rows](PA1_template_files/figure-html/unnamed-chunk-17-1.png)
+![Case1: histogram with missing data imputed through removing rows](PA1_template_files/figure-html/unnamed-chunk-17-1.png)
 
-### Histogram for imputing missing values with averages
+#### Case2: missing values inputed with five-minute interval averages
 
 ```r
 ggplot(dailyActivity2, aes(x=dailysteps)) + geom_histogram(binwidth = bins/20, fill = "orangered") + geom_vline(size=1, aes(xintercept = medianStepsImputed)) + geom_vline(size=1, color = "darkgreen", aes( xintercept = meanStepsImputed)) + labs(x="number of steps taken per day")
 ```
 
-![Histogram with missing data imputed through averaging](PA1_template_files/figure-html/unnamed-chunk-18-1.png)
+![Case 2: histogram with missing data imputed through averaging](PA1_template_files/figure-html/unnamed-chunk-18-1.png)
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -228,5 +229,5 @@ p + scale_x_continuous(breaks = seq(1,288, 12), labels = intervalLevels[hops]) +
 
 ![Daily averages with missing data imputed](PA1_template_files/figure-html/unnamed-chunk-21-1.png)
 
-We can see a pattern which is likely expected, i.e. the subject gets up and starts moving quite a bit earlier on weekdays than during weekend. The subject also settles down and moves less earlier during weekday evenings. 
+We can see a pattern which is likely expected, i.e. the subject gets up and starts moving quite a bit earlier on weekdays than during weekend. There are also more bursts of activity during weekends, and these burst continue later in the evening than on weekdays. 
 
